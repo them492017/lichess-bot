@@ -129,6 +129,15 @@ def play_game(li, game_id, control_queue, engine_factory, user_profile, config):
                 board = update_board(board, moves[-1])
                 if is_engine_move(game, moves):
                     best_move = None
+                    try:
+                        enginestats = engine.engine.info_handlers[0].info["score"][1].cp or 0
+                        print("****** Engine score:", enginestats)
+                    except (KeyError, AttributeError):
+                        enginestats = 0
+                        print("****** Could not retrieve engine score")
+                    if enginestats < -300:
+                        li.resign(game.id)
+                        break
                     if polyglot_cfg.get("enabled") and len(moves) <= polyglot_cfg.get("max_depth", 8) * 2 - 1:
                         best_move = get_book_move(board, polyglot_cfg)
                     if best_move == None:
