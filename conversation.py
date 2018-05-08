@@ -16,18 +16,22 @@ class Conversation():
         pass
 
     def command(self, line, game, cmd):
-        if cmd == "wait" and game.is_abortable():
-            game.abort_in(60)
-            self.send_reply(line, "Waiting 60 seconds...")
-        elif cmd == "name":
+        if cmd == "name":
             self.send_reply(line, "{} (lichess-bot v{})".format(self.engine.name(), self.version))
         elif cmd == "howto":
             self.send_reply(line, "How to run your own bot: lichess.org/api#tag/Chess-Bot")
         elif cmd == "eval" and line.room == "spectator":
             stats = self.engine.get_stats()
             self.send_reply(line, ", ".join(stats))
-        elif cmd == "eval":
-            self.send_reply(line, "I don't tell that to my opponent, sorry.")
+        elif cmd == "commands" or cmd == "help":
+            msg = "Supported commands: !name, !parameters, !hardware, !howto and !eval"
+            self.send_reply(line, msg)
+        elif cmd == "engine parameters" or cmd == "parameters":
+            msg = "2 Threads, Hash: 6144, Slow Mover:10, Contempt:100, Move Overhead:5000"
+            self.send_reply(line, msg)
+        elif cmd == "hardware":
+            msg = "MacBook Air (Early 2015), 1.6 GHz Dual Core and 8 GM RAM"
+            self.send_reply(line, msg)
 
     def send_reply(self, line, reply):
         self.xhr.chat(self.game.id, line.room, reply)
